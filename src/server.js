@@ -50,16 +50,36 @@ async function startServer() {
       examPapersRetriever,
       saver,
       langSmithClient,
-    };
-
-    // Middleware
+    }; // Middleware
     app.use(express.json());
     app.use(morgan('dev'));
+
+    // Configure CORS with better origin handling
+    const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
     app.use(
       cors({
-        origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+        origin: (origin, callback) => {
+          // Allow requests with no origin (like mobile apps or curl requests)
+          if (!origin) return callback(null, true);
+
+          // Normalize origins by removing trailing slashes
+          const normalizedOrigin = origin.replace(/\/$/, '');
+          const normalizedCorsOrigin = corsOrigin.replace(/\/$/, '');
+
+          if (normalizedOrigin === normalizedCorsOrigin) {
+            return callback(null, true);
+          }
+
+          // Also allow localhost for development
+          if (normalizedOrigin.includes('localhost')) {
+            return callback(null, true);
+          }
+
+          callback(new Error('Not allowed by CORS'));
+        },
         methods: ['GET', 'POST'],
         allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
       })
     );
 

@@ -17,6 +17,7 @@ yarn.lock
 .env.development
 .env.test
 .env.production
+.env.sample
 
 # Build output
 dist/

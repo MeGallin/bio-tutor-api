@@ -77,8 +77,8 @@ async function startServer() {
 
           callback(new Error('Not allowed by CORS'));
         },
-        methods: ['GET', 'POST'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
+        methods: ['GET', 'POST', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
         credentials: true,
       })
     );

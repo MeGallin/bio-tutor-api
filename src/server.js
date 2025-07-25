@@ -59,6 +59,9 @@ async function startServer() {
     app.use(
       cors({
         origin: (origin, callback) => {
+          console.log('🔍 CORS Debug - Received origin:', origin);
+          console.log('🔍 CORS Debug - Expected origin:', corsOrigin);
+
           // Allow requests with no origin (like mobile apps or curl requests)
           if (!origin) return callback(null, true);
 
@@ -66,15 +69,24 @@ async function startServer() {
           const normalizedOrigin = origin.replace(/\/$/, '');
           const normalizedCorsOrigin = corsOrigin.replace(/\/$/, '');
 
+          console.log('🔍 CORS Debug - Normalized received:', normalizedOrigin);
+          console.log(
+            '🔍 CORS Debug - Normalized expected:',
+            normalizedCorsOrigin
+          );
+
           if (normalizedOrigin === normalizedCorsOrigin) {
+            console.log('✅ CORS - Origin match, allowing request');
             return callback(null, true);
           }
 
           // Also allow localhost for development
           if (normalizedOrigin.includes('localhost')) {
+            console.log('✅ CORS - Localhost, allowing request');
             return callback(null, true);
           }
 
+          console.log('❌ CORS - Origin mismatch, rejecting request');
           callback(new Error('Not allowed by CORS'));
         },
         methods: ['GET', 'POST', 'OPTIONS'],
